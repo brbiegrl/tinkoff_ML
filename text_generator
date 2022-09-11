@@ -1,0 +1,23 @@
+import numpy as np
+from pathlib import Path
+import math
+from itertools import product
+
+def load_data(data_dir): #считываем входные данные
+    train_path = data_dir.joinpath('train.txt').absolute().as_posix()
+    test_path = data_dir.joinpath('test.txt').absolute().as_posix()
+
+    with open(train_path, 'r') as f:
+        train = [l.strip() for l in f.readlines()]
+    with open(test_path, 'r') as f:
+        test = [l.strip() for l in f.readlines()]
+    return train, test
+    
+class LanguageModel(object):
+    def __init__(self, train_data, n, laplace=1):
+        self.n = n
+        self.laplace = laplace
+        self.tokens = preprocess(train_data, n)
+        self.vocab  = nltk.FreqDist(self.tokens)
+        self.model  = self._create_model()
+        self.masks  = list(reversed(list(product((0,1), repeat=n))))
